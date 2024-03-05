@@ -18,7 +18,7 @@ def compare_images(
     data_path: Union[str, Path],
     gaussian_blur_radius_list: Tuple[int] = (5, 11, 21),
     min_contour_area: Union[int, float] = 500,
-) -> List[Dict[str, List[str]], Dict[str, List[str]]]:
+) -> Tuple[Dict[str, List[str]], Dict[str, List[str]]]:
     """The function compares images and returns a dict of images to delete and \
         a dict of images grouped by camera_id to keep.
 
@@ -109,26 +109,36 @@ def compare_images(
             )
 
             # if score is low enough, delete prev_frame
-            if score >= score_threshold:
-                # if the previous frame was already considered to be the same as the next (now), add now to keep_images
-                if prev_frame_same:
-                    keep_images[camera_id].append(files_by_camera_id[camera_id][i])
-                    prev_frame_same = False
-                    # i += 1
-                    continue
-
+            if score < score_threshold:
                 # add to delete_images
                 if camera_id not in delete_images:
                     delete_images[camera_id] = []
 
                 delete_images[camera_id].append(files_by_camera_id[camera_id][i])
             else:
+                # if the previous frame was already considered to be the same as the next (now), add now to keep_images
+                if prev_frame_same:
+                    if camera_id not in delete_images:
+                        delete_images[camera_id] = []
+                    delete_images[camera_id].append(files_by_camera_id[camera_id][i])
+                    prev_frame_same = False
+                    # i += 1
+                    continue
+
                 if camera_id not in keep_images:
                     keep_images[camera_id] = []
 
                 keep_images[camera_id].append(files_by_camera_id[camera_id][i])
 
                 prev_frame_same = True
+
+            if i + 1 == len(files_by_camera_id[camera_id]):
+                if prev_frame_same:
+                    delete_images[camera_id].append(
+                        files_by_camera_id[camera_id][i + 1]
+                    )
+                else:
+                    keep_images[camera_id].append(files_by_camera_id[camera_id][i + 1])
 
             # i += 1
 
