@@ -93,6 +93,15 @@ def compare_images_for_single_camera(
         # preprocess frames
         # TODO find good value for gaussion blur radii and add to cli parameters
         mask: Tuple[int] = (0, 0, 0, 0)  # images should remain unchanged
+
+        # c10 changes size dimensions that are not consistent, which is why no mask is applied
+        if camera_id == "c20":
+            mask = [0, 29, 0, 0]
+        elif camera_id == "c21":
+            mask = [0, 30, 0, 0]
+        elif camera_id == "c23":
+            mask = [0, 32, 0, 0]
+
         prev_frame = preprocess_image_change_detection(
             prev_frame,
             gaussian_blur_radius_list=gaussian_blur_radius_list,
