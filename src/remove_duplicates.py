@@ -6,7 +6,11 @@ import logging
 import os
 from typing import Dict, List
 
-from src.utils.handle_files import compare_images_parallel, copy_images_parallel
+from src.utils.handle_files import (
+    compare_images_parallel,
+    copy_images_parallel,
+    remove_images,
+)
 from src.utils.load_data import get_images_in_folder
 
 
@@ -16,6 +20,8 @@ def main(args, loglevel):
     # check if args.data_path is a valid path
     if not os.path.exists(args.data_path):
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), args.data_path)
+
+    print(args.delete)
 
     files_by_camera_id: Dict[str, List[str]] = get_images_in_folder(args.data_path)
 
@@ -28,13 +34,17 @@ def main(args, loglevel):
         args.score_threshold,
     )
 
-    # copy images to keep into data/unique_images/
-    copy_images_parallel(keep_frames, args.data_path)
+    if args.delete:
+        # delete images that are not unique
+        remove_images(delete_frame, args.data_path)
+    else:
+        # copy images to keep into data/unique_images/
+        copy_images_parallel(keep_frames, args.data_path, args.output_path)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Does a thing to some stuff.",
+        description="This program removes duplicate images from a dataset.",
         epilog="As an alternative to the commandline, params can be placed in a file, one per line, and specified on the commandline like '%(prog)s @params.conf'.",
         fromfile_prefix_chars="@",
     )
@@ -46,7 +56,6 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "-d",
         "--data_path",
         help="Absolute path to the dataset",
         type=str,
@@ -75,7 +84,20 @@ if __name__ == "__main__":
         required=False,
     )
 
-    # TODO add output path for unique images
+    parser.add_argument(
+        "--output_path",
+        help="The path to the folder to save the unique images",
+        type=str,
+        required=False,
+    )
+
+    parser.add_argument(
+        "--delete",
+        help="Determines if the images that are not unique should be deleted. \
+            If set, the images will be deleted.  \
+            If not set, the images will be copied to the output_path.",
+        action="store_true",
+    )
 
     args = parser.parse_args()
 

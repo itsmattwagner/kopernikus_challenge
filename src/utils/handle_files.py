@@ -14,6 +14,26 @@ from src.utils.kopernikus_func import (
 )
 
 
+def remove_images(delete_images: Dict[str, List[str]], data_path: Union[str, Path]):
+    """The function removes images from the data_path.
+
+    Args:
+        delete_images (Dict[str, List[str]]): A dictionary with the camera_id as key and a list of filenames from \
+            that camera as value.
+        data_path (str | Path): The data path to the folder to search for the camera images.
+    """
+    # remove images from data_path
+    for _, filenames in delete_images.items():
+        for filename in filenames:
+            img_path: Path = os.path.join(data_path, filename)
+
+            # remove img_path
+            cmd = ["rm", str(img_path)]
+            subprocess.run(
+                cmd, check=True
+            )  # subprocess.run waits for the command to complete
+
+
 def copy_images(
     filenames: List[str],
     data_path: Union[str, Path],
@@ -36,9 +56,10 @@ def copy_images(
 
 
 def copy_images_parallel(
-    keep_frames: Dict[str, List[str]], data_path: Union[str, Path]
+    keep_frames: Dict[str, List[str]],
+    data_path: Union[str, Path],
+    unique_images_path: str = "./data/unique_images",
 ):
-    unique_images_path = "./data/unique_images"
     # create folder if not exists
     os.makedirs(unique_images_path, exist_ok=True)
 
@@ -91,7 +112,6 @@ def compare_images_for_single_camera(
             )
 
         # preprocess frames
-        # TODO find good value for gaussion blur radii and add to cli parameters
         mask: Tuple[int] = (0, 0, 0, 0)  # images should remain unchanged
 
         # c10 changes size dimensions that are not consistent, which is why no mask is applied
@@ -126,7 +146,6 @@ def compare_images_for_single_camera(
                 )
 
         # compare images
-        # TODO find good value for min_contour_area add to cli parameters
         score, _, _ = compare_frames_change_detection(
             prev_frame, next_frame, min_contour_area=min_contour_area
         )
@@ -163,7 +182,6 @@ def compare_images_for_single_camera(
     return delete_images, keep_images
 
 
-# TODO may have to adjust default values for gaussian_blur_radius_list and min_contour_area
 def compare_images_parallel(
     files_by_camera_id: Dict[str, List[str]],
     data_path: Union[str, Path],
