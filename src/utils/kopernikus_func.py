@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 import cv2
 import imutils
@@ -7,7 +7,7 @@ import numpy as np
 
 def draw_color_mask(
     img: np.ndarray,
-    borders: List[float | int] | Tuple[float | int],
+    borders: Union[List[Union[float, int]], Tuple[Union[float, int]]],
     color: Tuple[int, int, int] = (0, 0, 0),
 ) -> np.ndarray:
     """The function draws a mask on the image.
@@ -40,10 +40,15 @@ def draw_color_mask(
 
 def preprocess_image_change_detection(
     img: np.ndarray,
-    gaussian_blur_radius_list: List[int] | Tuple[int] = None,
-    black_mask: List[float | int] | Tuple[float | int] = (5, 10, 5, 0),
+    gaussian_blur_radius_list: Union[List[int], Tuple[int]] = None,
+    black_mask: Union[List[Union[float, int]], Tuple[Union[float, int]]] = (
+        5,
+        10,
+        5,
+        0,
+    ),
 ) -> np.ndarray:
-    """The function converts the image to grayscale, applies a Gaussian blur, and draws a black mask. 
+    """The function converts the image to grayscale, applies a Gaussian blur, and draws a black mask.
         The image has to be in the BGR format!
 
     Args:
@@ -69,7 +74,7 @@ def preprocess_image_change_detection(
 
 
 def compare_frames_change_detection(
-    prev_frame: np.ndarray, next_frame: np.ndarray, min_contour_area: int | float
+    prev_frame: np.ndarray, next_frame: np.ndarray, min_contour_area: Union[int, float]
 ) -> Tuple[float, List[np.ndarray], np.ndarray]:
     """The function compares two frames and returns the score, the contours, and the thresholded image.
     Lower is better for the score.

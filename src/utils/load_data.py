@@ -1,6 +1,5 @@
 import os
 from datetime import datetime  # , timezone TODO REMOVE
-from pathlib import Path
 from typing import Dict, List
 
 
