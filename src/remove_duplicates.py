@@ -6,7 +6,7 @@ import logging
 import os
 from typing import Dict, List
 
-from src.utils.handle_files import compare_images, copy_images
+from src.utils.handle_files import compare_images_parallel, copy_images_parallel
 from src.utils.load_data import get_images_in_folder
 
 
@@ -20,15 +20,16 @@ def main(args, loglevel):
     files_by_camera_id: Dict[str, List[str]] = get_images_in_folder(args.data_path)
 
     # call compare_image with files_by_camera_id and args parameters
-    delete_frame, keep_frames = compare_images(
+    delete_frame, keep_frames = compare_images_parallel(
         files_by_camera_id,
         args.data_path,
         args.gaussian_blur_radius_list,
         args.min_contour_area,
+        args.score_threshold,
     )
 
     # copy images to keep into data/unique_images/
-    copy_images(keep_frames, args.data_path)
+    copy_images_parallel(keep_frames, args.data_path)
 
 
 if __name__ == "__main__":
@@ -63,6 +64,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "--min_contour_area",
         help="The min area for contours to be considered",
+        type=int,
+        required=False,
+    )
+
+    parser.add_argument(
+        "--score_threshold",
+        help="The threshold for the score for two images to be considered similar",
         type=int,
         required=False,
     )
