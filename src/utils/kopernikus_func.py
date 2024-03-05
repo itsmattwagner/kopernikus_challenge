@@ -6,17 +6,19 @@ import numpy as np
 
 
 def draw_color_mask(
-    img: np.array, borders: List[float | int] | Tuple[float | int], color=(0, 0, 0)
-) -> np.array:
+    img: np.ndarray,
+    borders: List[float | int] | Tuple[float | int],
+    color: Tuple[int, int, int] = (0, 0, 0),
+) -> np.ndarray:
     """The function draws a mask on the image.
 
     Args:
-        img (np.array): An image read from cv2.
+        img (np.ndarray): An image read from cv2.
         borders (List[float  |  int] | Tuple[float  |  int]): A list of 4 elements representing the percentage of the image to be masked. The order is [x_min, y_min, x_max, y_max].
         color (tuple, optional): Color of the border mask. Defaults to (0, 0, 0).
 
     Returns:
-        np.array: The image with the mask.
+        np.ndarray: The image with the mask.
     """
 
     h = img.shape[0]
@@ -36,8 +38,21 @@ def draw_color_mask(
 
 
 def preprocess_image_change_detection(
-    img: np.array, gaussian_blur_radius_list=None, black_mask=(5, 10, 5, 0)
-):
+    img: np.ndarray,
+    gaussian_blur_radius_list: List[int] | Tuple[int] = None,
+    black_mask: List[float | int] | Tuple[float | int] = (5, 10, 5, 0),
+) -> np.ndarray:
+    """The function converts the image to grayscale, applies a Gaussian blur, and draws a black mask. The image has to be in the BGR format!
+
+    Args:
+        img (np.ndarray): An image read from cv2 in BGR format.
+        gaussian_blur_radius_list (List[int] | Tuple[int], optional): A list with radii to be applied onto the image. Defaults to None.
+        black_mask (List[float  |  int] | Tuple[float  |  int], optional): A black mask that is drawn onto the image. Defaults to (5, 10, 5, 0).
+
+    Returns:
+        np.ndarray: The preprocessed image.
+    """
+
     gray = img.copy()
     gray = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
     if gaussian_blur_radius_list is not None:
@@ -49,7 +64,9 @@ def preprocess_image_change_detection(
     return gray
 
 
-def compare_frames_change_detection(prev_frame, next_frame, min_contour_area):
+def compare_frames_change_detection(
+    prev_frame: np.ndarray, next_frame: np.ndarray, min_contour_area: int | float
+) -> Tuple[int, List[float], float]:
     frame_delta = cv2.absdiff(prev_frame, next_frame)
     thresh = cv2.threshold(frame_delta, 45, 255, cv2.THRESH_BINARY)[1]
 
