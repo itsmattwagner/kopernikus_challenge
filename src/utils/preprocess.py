@@ -1,8 +1,24 @@
+from typing import List, Tuple
+
 import cv2
 import imutils
+import numpy as np
 
 
-def draw_color_mask(img, borders, color=(0, 0, 0)):
+def draw_color_mask(
+    img: np.array, borders: List[float | int] | Tuple[float | int], color=(0, 0, 0)
+) -> np.array:
+    """The function draws a mask on the image.
+
+    Args:
+        img (np.array): An image read from cv2.
+        borders (List[float  |  int] | Tuple[float  |  int]): A list of 4 elements representing the percentage of the image to be masked. The order is [x_min, y_min, x_max, y_max].
+        color (tuple, optional): Color of the border mask. Defaults to (0, 0, 0).
+
+    Returns:
+        np.array: The image with the mask.
+    """
+
     h = img.shape[0]
     w = img.shape[1]
 
@@ -20,7 +36,7 @@ def draw_color_mask(img, borders, color=(0, 0, 0)):
 
 
 def preprocess_image_change_detection(
-    img, gaussian_blur_radius_list=None, black_mask=(5, 10, 5, 0)
+    img: np.array, gaussian_blur_radius_list=None, black_mask=(5, 10, 5, 0)
 ):
     gray = img.copy()
     gray = cv2.cvtColor(gray, cv2.COLOR_BGR2GRAY)
