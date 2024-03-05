@@ -2,7 +2,7 @@
 
 import pytest
 
-from src.utils.handle_files import compare_images
+from src.utils.handle_files import compare_images_parallel
 from src.utils.load_data import get_images_in_folder
 
 
@@ -11,9 +11,7 @@ def test_compare_images_with_length():
     files_by_camera_id = get_images_in_folder(data_path)
 
     # call compare_image with files_by_camera_id and args parameters
-    delete_frame, keep_frames = compare_images(files_by_camera_id, data_path)
-
-    # sum of all frames in delete_frame and keep_frames should be the same as the sum of all frames in files_by_camera_id
+    delete_frame, keep_frames = compare_images_parallel(files_by_camera_id, data_path)
 
     # sum of all frames in delete_frame
     sum_delete_frame = 0
