@@ -1,5 +1,6 @@
 import errno
 import os
+import subprocess
 from pathlib import Path
 from typing import Dict, List, Tuple, Union
 
@@ -10,6 +11,34 @@ from src.utils.kopernikus_func import (
     compare_frames_change_detection,
     preprocess_image_change_detection,
 )
+
+
+def copy_images(keep_frames: Dict[str, List[str]], data_path: Union[str, Path]):
+    # copy images to keep into data/unique_images/
+    for camera_id in keep_frames:
+        for filename in keep_frames[camera_id]:
+            img_path_src: Path = os.path.join(data_path, filename)
+            # TODO directly copy and do not read images
+            """
+            img: np.ndarray = cv2.imread(img_path)
+            if img is None:
+                raise FileNotFoundError(
+                    errno.ENOENT, os.strerror(errno.ENOENT), img_path
+                )
+            """
+
+            unique_images_path = "./data/unique_images"
+            # create folder if not exists
+            os.makedirs(unique_images_path, exist_ok=True)
+
+            new_filepath = os.path.join(unique_images_path, filename)
+
+            # copy img_path to new filepath
+            cmd = ["cp", img_path_src, new_filepath]
+            subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+            # copy image to unique_images
+            # cv2.imwrite(os.path.join(data_path, filename), img)
 
 
 # TODO may have to adjust default values for gaussian_blur_radius_list and min_contour_area
