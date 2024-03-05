@@ -14,7 +14,8 @@ def draw_color_mask(
 
     Args:
         img (np.ndarray): An image read from cv2.
-        borders (List[float  |  int] | Tuple[float  |  int]): A list of 4 elements representing the percentage of the image to be masked. The order is [x_min, y_min, x_max, y_max].
+        borders (List[float  |  int] | Tuple[float  |  int]): A list of 4 elements representing the percentage \
+             of the image to be masked. The order is [x_min, y_min, x_max, y_max].
         color (tuple, optional): Color of the border mask. Defaults to (0, 0, 0).
 
     Returns:
@@ -42,12 +43,15 @@ def preprocess_image_change_detection(
     gaussian_blur_radius_list: List[int] | Tuple[int] = None,
     black_mask: List[float | int] | Tuple[float | int] = (5, 10, 5, 0),
 ) -> np.ndarray:
-    """The function converts the image to grayscale, applies a Gaussian blur, and draws a black mask. The image has to be in the BGR format!
+    """The function converts the image to grayscale, applies a Gaussian blur, and draws a black mask. 
+        The image has to be in the BGR format!
 
     Args:
         img (np.ndarray): An image read from cv2 in BGR format.
-        gaussian_blur_radius_list (List[int] | Tuple[int], optional): A list with radii to be applied onto the image. Defaults to None.
-        black_mask (List[float  |  int] | Tuple[float  |  int], optional): A black mask that is drawn onto the image. Defaults to (5, 10, 5, 0).
+        gaussian_blur_radius_list (List[int] | Tuple[int], optional): A list with radii to be applied onto the image. \
+            Defaults to None.
+        black_mask (List[float  |  int] | Tuple[float  |  int], optional): A black mask that is drawn onto the image. \
+            Defaults to (5, 10, 5, 0).
 
     Returns:
         np.ndarray: The preprocessed image.
@@ -66,7 +70,18 @@ def preprocess_image_change_detection(
 
 def compare_frames_change_detection(
     prev_frame: np.ndarray, next_frame: np.ndarray, min_contour_area: int | float
-) -> Tuple[int, List[float], float]:
+) -> Tuple[float, List[np.ndarray], np.ndarray]:
+    """The function compares two frames and returns the score, the contours, and the thresholded image.
+    Lower is better for the score.
+
+    Args:
+        prev_frame (np.ndarray): An image read from cv2 in GRAY format (uint8).
+        next_frame (np.ndarray): An image read from cv2 in GRAY format (uint8).
+        min_contour_area (int | float): The minimum area of a contour to be considered.
+
+    Returns:
+        Tuple[float, List[np.ndarray], np.ndarray]: The score, the contours, and the thresholded image.
+    """
     frame_delta = cv2.absdiff(prev_frame, next_frame)
     thresh = cv2.threshold(frame_delta, 45, 255, cv2.THRESH_BINARY)[1]
 
