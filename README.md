@@ -11,7 +11,14 @@ Solution for the interview challenge by Kopernikus to remove duplicate images fr
 
 # Questions
 * What did you learn after looking on our dataset?
-  - asdf 
+  - There are four different cameras.
+  - There are eight different image dimensions.
+  - There are two date formats UNIX timestamp and Year_Month_Day__Hours_Minutes_Seconds, every single digit leads with a 0
+  - All images are of filetype PNG
+  - There are 1080 images in total
+  - One images dimensions are too small -> probably an error and has to be removed
+  - One image cannot be read by OpenCV, I expect a fault in the encoding.
+
 * How does you program work?
       
       1. The program reads in all the filenames of the images
@@ -29,6 +36,8 @@ Solution for the interview challenge by Kopernikus to remove duplicate images fr
   - an advanced masking solution
   - a lightweight machine learning component
 - Any other comments about your solution?
+  - The file c21_2021_03_27__12_53_37.png has been removed from the dataset for its small dimension size.
+  - OpenCV was not able to read c21_2021_03_27__10_36_36.png, it has been removed as well.
 
 
 
@@ -46,7 +55,19 @@ Solution for the interview challenge by Kopernikus to remove duplicate images fr
   conda env create -f environment.yml
 ```
 
-If you already ha
+If you run into any problems installing the envs, the following are the libraries I installed
+
+```bash
+conda create --name <env_name> python=3.8
+conda install anaconda::pytest
+conda install anaconda::ipykernel
+conda install anaconda::pandas
+conda install -c conda-forge opencv
+
+pip install matplotlib
+pip install imutils
+pip install pytest-mock
+```
 
 #### Run the python file
 ```bash
@@ -65,13 +86,4 @@ The only one required is the path to your dataset.
 - --score_threshold | The threshold for the score for two images to be considered similar
 - --output_path | The path to the folder to save the unique images, if --delete is not set
 - --delete | Determines if the images that are not unique should be deleted. If set, the images will be deleted. If not set, the images will be copied to the output_path.
-
-
-## Running Tests
-
-To run tests, just run pytest in the root directory.
-
-```bash
-  pytest
-```
 
