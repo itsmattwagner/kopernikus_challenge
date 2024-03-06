@@ -21,9 +21,8 @@ def main(args, loglevel):
     if not os.path.exists(args.data_path):
         raise FileNotFoundError(errno.ENOENT, os.strerror(errno.ENOENT), args.data_path)
 
-    print(args.delete)
-
     files_by_camera_id: Dict[str, List[str]] = get_images_in_folder(args.data_path)
+    logging.info("Loaded images from %s", args.data_path)
 
     # call compare_image with files_by_camera_id and args parameters
     delete_frame, keep_frames = compare_images_parallel(
@@ -33,23 +32,27 @@ def main(args, loglevel):
         args.min_contour_area,
         args.score_threshold,
     )
+    logging.info("Image comparison for all cameras finished.")
 
     if args.delete:
         # delete images that are not unique
         remove_images(delete_frame, args.data_path)
+        logging.info("Images that are not unique have been deleted.")
     else:
+        if args.output_path is None:
+            args.output_path = os.path.join(".", "data", "unique_images")
         # copy images to keep into data/unique_images/
         copy_images_parallel(keep_frames, args.data_path, args.output_path)
+        logging.info("Images that are unique have been copied to %s", args.output_path)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="This program removes duplicate images from a dataset.",
-        epilog="As an alternative to the commandline, params can be placed in a file, one per line, and specified on the commandline like '%(prog)s @params.conf'.",
+        epilog="As an alternative to the commandline, params can be placed in a file, \
+            one per line, and specified on the commandline like '%(prog)s @params.conf'.",
         fromfile_prefix_chars="@",
     )
-
-    # TODO add input parameters
 
     parser.add_argument(
         "-v", "--verbose", help="Increase the output verbosity", action="store_true"
@@ -100,9 +103,6 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-
-    # TODO add checks if cli parameters are correct (expected string, but gave integer) or if required parameters are given
-    # TODO check if data_path is a valid path
 
     # Setup logging
     if args.verbose:

@@ -1,5 +1,5 @@
 import os
-from datetime import datetime  # , timezone TODO REMOVE
+from datetime import datetime
 from typing import Dict, List
 
 
@@ -7,6 +7,7 @@ def string_to_date(timestamp_str: str) -> datetime:
     """
     Converts a string to a datetime.date object. The string can either represent
     a unix timestamp (in milliseconds) or a date in the format 'YYYY_MM_DD__HH_MM_SS'.
+    This function expects the date formats to be in the UTC timezone.
 
     Args:
     - timestamp_str (str): The date string to convert.
@@ -28,7 +29,6 @@ def string_to_date(timestamp_str: str) -> datetime:
             # Convert the string as a custom format date
             return datetime.strptime(timestamp_str, "%Y_%m_%d__%H_%M_%S")
         except ValueError as e:
-            # TODO maybe instead of raising error, return None and handle the error in the main function (like skipping the image and logging the error message)
             # Raise error message if both attempts fail
             raise ValueError(
                 f"Unable to convert '{timestamp_str}' into a valid date format."

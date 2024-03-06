@@ -10,7 +10,7 @@ def draw_color_mask(
     borders: Union[List[Union[float, int]], Tuple[Union[float, int]]],
     color: Tuple[int, int, int] = (0, 0, 0),
 ) -> np.ndarray:
-    """The function draws a mask on the image.
+    """The function draws a mask on the image. The borders take away from the image from left, bottom, right, top.
 
     Args:
         img (np.ndarray): An image read from cv2.
